@@ -4,6 +4,21 @@ buildscript {
         maven{ url'http://maven.aliyun.com/nexus/content/groups/public/' }
         maven{ url'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
         google()
+        mavenCentral()
+        maven {
+            url 'http://172.16.0.103:8081/repository/liqun_releases/'
+            credentials{
+                username 'admin'
+                password '76Ll75Xp15Yp'
+            }
+        }
+        maven {
+            url 'http://172.16.0.103:8081/repository/liqun_snapshots/'
+            credentials{
+                username 'admin'
+                password '76Ll75Xp15Yp'
+            }
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:3.2.0"
@@ -18,6 +33,20 @@ allprojects {
         maven{ url'http://maven.aliyun.com/nexus/content/groups/public/' }
         maven{ url'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
         google()
+        maven {
+            url 'http://172.16.0.103:8081/repository/liqun_releases/'
+            credentials{
+                username 'admin'
+                password '76Ll75Xp15Yp'
+            }
+        }
+        maven {
+            url 'http://172.16.0.103:8081/repository/liqun_snapshots/'
+            credentials{
+                username 'admin'
+                password '76Ll75Xp15Yp'
+            }
+        }
     }
 }
 
