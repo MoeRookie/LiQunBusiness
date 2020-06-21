@@ -4,13 +4,13 @@ def pomVersionName = '1.0.0-SNAPSHOT'
 def pomName = this.getName()
 def pomDescription = 'the audio library for all project'
 android {
-    compileSdkVersion 28
+    compileSdkVersion this.rootProject.android.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion this.rootProject.android.minSdkVersion
+        targetSdkVersion this.rootProject.android.targetSdkVersion
+        versionCode this.rootProject.android.versionCode
+        versionName this.rootProject.android.versionName
     }
 
     buildTypes {
@@ -23,7 +23,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation this.rootProject.depsLibs.appcompat
 }
 
 //上传maven配置
