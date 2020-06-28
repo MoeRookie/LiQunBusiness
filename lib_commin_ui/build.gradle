@@ -1,15 +1,13 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion this.rootProject.android.compileSdkVersion
 
     defaultConfig {
-        applicationId this.rootProject.android.applicationId
         minSdkVersion this.rootProject.android.minSdkVersion
         targetSdkVersion this.rootProject.android.targetSdkVersion
-        versionCode this.rootProject.android.versionCode
-        versionName this.rootProject.android.versionName
-        multiDexEnabled this.rootProject.android.multiDexEnabled
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {
@@ -22,7 +20,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation this.rootProject.depsLibs.appcompat
-    //基础UI库
-    implementation project(':lib_commin_ui')
+    compileOnly this.rootProject.depsLibs.appcompat
+    api rootProject.depsLibs.magicindicator
 }
