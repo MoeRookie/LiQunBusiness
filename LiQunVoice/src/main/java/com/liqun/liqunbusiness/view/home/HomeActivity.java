@@ -1,4 +1,4 @@
-package com.liqun.liqunbusiness;
+package com.liqun.liqunbusiness.view.home;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,7 +10,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.liqun.lib_commin_ui.base.BaseActivity;
 import com.liqun.lib_commin_ui.pager_indictor.ScaleTransitionPagerTitleView;
+import com.liqun.liqunbusiness.R;
 import com.liqun.liqunbusiness.model.CHANNEL;
 import com.liqun.liqunbusiness.view.home.adapter.HomePagerAdapter;
 
@@ -22,7 +24,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
-public class MainActivity extends FragmentActivity {
+public class HomeActivity extends BaseActivity {
     private static final CHANNEL[] CHANNELS =
             new CHANNEL[]{CHANNEL.MY, CHANNEL.DISCORY, CHANNEL.FRIEND};
 
