@@ -6,6 +6,7 @@
     android:background="@color/color_white">
     <!-- 存放内容区 -->
     <RelativeLayout
+        android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_white">
@@ -48,8 +49,12 @@
     </RelativeLayout>
     <!-- 存放侧滑菜单 -->
     <RelativeLayout
+        android:id="@+id/left_drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:layout_marginEnd="25dp"
+        android:background="@color/color_white">
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
