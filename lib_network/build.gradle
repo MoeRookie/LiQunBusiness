@@ -3,6 +3,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion this.rootProject.android.compileSdkVersion
 
+    dexOptions {
+        jumboMode = true
+    }
+
     defaultConfig {
         minSdkVersion this.rootProject.android.minSdkVersion
         targetSdkVersion this.rootProject.android.targetSdkVersion
@@ -21,4 +25,5 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation this.rootProject.depsLibs.appcompat
+    api rootProject.depsLibs.okhttp //okttp依赖
 }
