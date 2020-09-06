@@ -10,9 +10,12 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+/**
+ * build the request
+ */
 public class CommonRequest {
     /**
-     * 不带请求头的get请求
+     * ressemble the params to the url
      * @param url
      * @param params
      * @return
@@ -24,36 +27,35 @@ public class CommonRequest {
      * 可以带请求头的get请求
      * @param url
      * @param params
-     * @param headers
+     * @param headersParams
      * @return
      */
-    public static Request createGetRequest(String url, RequestParams params, RequestParams headers){
-        StringBuilder urlBuilder = new StringBuilder(url).append("?");
-        if (params != null) {
+    public static Request createGetRequest(String url, RequestParams params, RequestParams headersParams){
+        StringBuilder stringBuilder = new StringBuilder(url).append("?");
+        if (params != null) { // 遍历参数
             for (Map.Entry<String, String> entry : params.urlParams.entrySet()) {
-                urlBuilder.append(entry.getKey())
+                stringBuilder.append(entry.getKey())
                         .append("=")
                         .append(entry.getValue())
                         .append("&");
             }
         }
-        // 添加请求头
-        Headers.Builder headerBuild = new Headers.Builder();
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.urlParams.entrySet()) {
-                headerBuild.add(entry.getKey(), entry.getValue());
+        Headers.Builder headersBuilder = new Headers.Builder();
+        if (headersParams != null) { // 遍历请求头
+            for (Map.Entry<String, String> entry : headersParams.urlParams.entrySet()) {
+                headersBuilder.add(entry.getKey(), entry.getValue());
             }
         }
-        Headers header = headerBuild.build();
-        return new Request.Builder()
-                .url(urlBuilder.substring(0, urlBuilder.length() - 1))
+        Headers headers = headersBuilder.build();
+        Request request = new Request.Builder()
+                .url(stringBuilder.toString().trim().substring(0, stringBuilder.length() - 1))
                 .get()
-                .headers(header)
+                .headers(headers)
                 .build();
+        return request;
     }
-
     /**
-     * 不带请求头的post请求
+     * create the key-value Request
      * @param url
      * @param params
      * @return
@@ -61,58 +63,64 @@ public class CommonRequest {
     public static Request createPostRequest(String url, RequestParams params){
         return createPostRequest(url, params, null);
     }
-
     /**
      * 可以带请求头的post请求
      * @param url
      * @param params
-     * @param headers
+     * @param headersParams
      * @return
      */
-    public static Request createPostRequest(String url, RequestParams params, RequestParams headers){
-        FormBody.Builder formBodyBuild = new FormBody.Builder();
-        if (params != null) {
+    public static Request createPostRequest(String url, RequestParams params, RequestParams headersParams){
+        FormBody.Builder formBodyBuilder = new FormBody.Builder();
+        if (params != null) { // 遍历参数
             for (Map.Entry<String, String> entry : params.urlParams.entrySet()) {
-                formBodyBuild.add(entry.getKey(), entry.getValue());
+                formBodyBuilder.add(entry.getKey(), entry.getValue());
             }
         }
-        // 添加请求头
-        Headers.Builder headerBuild = new Headers.Builder();
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.urlParams.entrySet()) {
-                headerBuild.add(entry.getKey(), entry.getValue());
+        Headers.Builder headersBuilder = new Headers.Builder();
+        if (headersParams != null) { // 遍历请求头
+            for (Map.Entry<String, String> entry : headersParams.urlParams.entrySet()) {
+                headersBuilder.add(entry.getKey(), entry.getValue());
             }
         }
-        FormBody formBody = formBodyBuild.build();
-        Headers header = headerBuild.build();
-        Request request = new Request.Builder().url(url)
+        FormBody formBody = formBodyBuilder.build();
+        Headers headers = headersBuilder.build();
+        Request request = new Request.Builder()
+                .url(url)
                 .post(formBody)
-                .headers(header)
+                .headers(headers)
                 .build();
         return request;
     }
 
+    private static final MediaType FILE_TYPE = MediaType.parse("application/octet-stream");
+
     /**
      * 文件上传请求
+     * @param url
+     * @param params
+     * @return
      */
-    private static final MediaType FILE_TYPE = MediaType.parse("application/octet-stream");
-    public static Request createMultiPostRequest(String url, RequestParams params){
-        MultipartBody.Builder requestBody = new MultipartBody.Builder();
-        requestBody.setType(MultipartBody.FORM);
-        if (params != null) {
+    public static Request createMultiPostRequest(String url, RequestParams params) {
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
+        multipartBodyBuilder.setType(MultipartBody.FORM);
+        if (params != null) { // 参数遍历
             for (Map.Entry<String, Object> entry : params.fileParams.entrySet()) {
                 if (entry.getValue() instanceof File) {
-                    requestBody.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + entry.getKey() + "\""),
-                            RequestBody.create(FILE_TYPE, (File) entry.getValue()));
+                    multipartBodyBuilder
+                            .addPart(Headers.of("Content-Disposition", "form-data; name=\"" + entry.getKey() + "\""),
+                                    RequestBody.create(FILE_TYPE, (File) entry.getValue()));
                 } else if (entry.getValue() instanceof String) {
-                    requestBody.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + entry.getKey() + "\""),
+                    multipartBodyBuilder.addPart(Headers.of("Content-Disposition", "form-data; name=\"" + entry.getKey() + "\""),
                             RequestBody.create(null, (String) entry.getValue()));
                 }
             }
         }
-        return new Request.Builder()
+        MultipartBody multipartBody = multipartBodyBuilder.build();
+        Request request = new Request.Builder()
                 .url(url)
-                .post(requestBody.build())
+                .post(multipartBody)
                 .build();
+        return request;
     }
 }
