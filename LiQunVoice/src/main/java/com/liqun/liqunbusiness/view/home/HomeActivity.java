@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +16,9 @@ import com.liqun.lib_commin_ui.base.BaseActivity;
 import com.liqun.lib_commin_ui.pager_indictor.ScaleTransitionPagerTitleView;
 import com.liqun.liqunbusiness.R;
 import com.liqun.liqunbusiness.model.CHANNEL;
+import com.liqun.liqunbusiness.utils.UserManager;
 import com.liqun.liqunbusiness.view.home.adapter.HomePagerAdapter;
+import com.liqun.liqunbusiness.view.login.LoginActivity;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
@@ -25,7 +28,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private static final CHANNEL[] CHANNELS =
             new CHANNEL[]{CHANNEL.MY, CHANNEL.DISCORY, CHANNEL.FRIEND};
 
@@ -37,6 +40,7 @@ public class HomeActivity extends BaseActivity {
     private View mSearchView;
     private ViewPager mViewPager;
     private HomePagerAdapter mAdapter;
+    private View mUnLoginLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,22 @@ public class HomeActivity extends BaseActivity {
         mAdapter = new HomePagerAdapter(getSupportFragmentManager(), CHANNELS);
         mViewPager.setAdapter(mAdapter);
         initMagicIndicator();
+        // 登录相关UI
+        mUnLoginLayout = findViewById(R.id.unloggin_layout);
+        mUnLoginLayout.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.unloggin_layout:
+                if (!UserManager.getInstance().hasLogined()) {
+                    LoginActivity.start(this);
+                }else{
+                    mDrawerLayout.closeDrawer(Gravity.LEFT);
+                }
+                break;
+        }
     }
 
     private void initMagicIndicator() {
