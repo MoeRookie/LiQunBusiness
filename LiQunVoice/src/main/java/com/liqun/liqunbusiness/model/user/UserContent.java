@@ -1,6 +1,6 @@
 package com.liqun.liqunbusiness.model.user;
 
-import com.imooc.imooc_voice.model.BaseModel;
+import com.liqun.liqunbusiness.model.BaseModel;
 
 /**
  * 用户真正实体数据
