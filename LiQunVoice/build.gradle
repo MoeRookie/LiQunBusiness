@@ -23,8 +23,13 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation this.rootProject.depsLibs.appcompat
+    //rxjava库
+    implementation rootProject.depsLibs.rxjava
+    implementation rootProject.depsLibs.rxandroid
     //基础UI库
     implementation project(':lib_commin_ui')
     //网络请求库
     implementation project(':lib_network')
+    //图片加载库
+    implementation project(':lib_image_loader')
 }
