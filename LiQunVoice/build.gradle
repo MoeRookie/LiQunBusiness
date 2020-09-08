@@ -25,4 +25,6 @@ dependencies {
     implementation this.rootProject.depsLibs.appcompat
     //基础UI库
     implementation project(':lib_commin_ui')
+    //网络请求库
+    implementation project(':lib_network')
 }
