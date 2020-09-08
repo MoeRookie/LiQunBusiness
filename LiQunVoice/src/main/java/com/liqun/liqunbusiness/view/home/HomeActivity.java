@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
@@ -14,8 +15,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.liqun.lib_commin_ui.base.BaseActivity;
 import com.liqun.lib_commin_ui.pager_indictor.ScaleTransitionPagerTitleView;
+import com.liqun.lib_image_loader.app.ImageLoaderManager;
 import com.liqun.liqunbusiness.R;
 import com.liqun.liqunbusiness.model.CHANNEL;
+import com.liqun.liqunbusiness.model.login.LoginEvent;
+import com.liqun.liqunbusiness.model.user.User;
 import com.liqun.liqunbusiness.utils.UserManager;
 import com.liqun.liqunbusiness.view.home.adapter.HomePagerAdapter;
 import com.liqun.liqunbusiness.view.login.LoginActivity;
@@ -27,6 +31,10 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNav
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private static final CHANNEL[] CHANNELS =
@@ -41,10 +49,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private ViewPager mViewPager;
     private HomePagerAdapter mAdapter;
     private View mUnLoginLayout;
+    private ImageView mPhotoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_main);
         initView();
         initData();
@@ -66,6 +76,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         // 登录相关UI
         mUnLoginLayout = findViewById(R.id.unloggin_layout);
         mUnLoginLayout.setOnClickListener(this);
+        mPhotoView = findViewById(R.id.avatr_view);
     }
 
     @Override
@@ -121,5 +132,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         });
         magicIndicator.setNavigator(commonNavigator);
         ViewPagerHelper.bind(magicIndicator, mViewPager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    /**
+     * 处理登录事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginEvent(LoginEvent event){
+        mUnLoginLayout.setVisibility(View.GONE);
+        mPhotoView.setVisibility(View.VISIBLE);
+        ImageLoaderManager.getInstance()
+                .displayImageForCircle(mPhotoView, UserManager.getInstance().getUser().data.photoUrl);
     }
 }
