@@ -28,7 +28,9 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
     // 真正负责音频播放
     private CustomMediaPlayer mMediaPlayer;
     private WifiManager.WifiLock mWifiLock;
+    // 音频焦点监听器
     private AudioFocusManager mAudioFocusManager;
+    private boolean isPauseByFocusLossTransient;
     private Handler mHandler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
@@ -58,8 +60,25 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
         mAudioFocusManager = new AudioFocusManager(AudioHelper.getContext(), this);
     }
 
+    // 设置音量
+    private void setVolumn(float leftVol, float rightVol){
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setVolume(leftVol, rightVol);
+        }
+    }
+
+    // 内部开始播放
+    private void start(){
+        if (!mAudioFocusManager.requestAudioFocus()) {
+            Log.e(TAG, "获取音频焦点失败");
+        }
+        mMediaPlayer.start();
+        mWifiLock.acquire();
+        // 对外发送start事件
+    }
+
     /**
-     * 对外提供加载
+     * 对外提供加载方法
      * @param audioBean
      */
     public void load(AudioBean audioBean){
@@ -71,18 +90,6 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
         }catch (Exception e){
             // 对外发送error事件
         }
-    }
-
-    /**
-     * 内部开始播放
-     */
-    private void start(){
-        if (!mAudioFocusManager.requestAudioFocus()) {
-            Log.e(TAG, "获取音频焦点失败");
-        }
-        mMediaPlayer.start();
-        mWifiLock.acquire();
-        // 对外发送start事件
     }
 
     /**
@@ -166,21 +173,30 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
 
     @Override
     public void audioFocusGrant() {
-
+        // 再次获取到音频焦点
+        setVolumn(1.0f, 1.0f);
+        if (isPauseByFocusLossTransient) {
+            resume();
+        }
+        isPauseByFocusLossTransient = false;
     }
 
     @Override
     public void audioFocusLoss() {
-
+        // 永久失去焦点
+        pause();
     }
 
     @Override
     public void audioFocusLossTransient() {
-
+        // 短暂性失去焦点
+        pause();
+        isPauseByFocusLossTransient = true;
     }
 
     @Override
     public void audioFocusLossDuck() {
-
+        // 瞬间失去焦点
+        setVolumn(0.5f, 0.5f);
     }
 }
