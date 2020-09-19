@@ -216,4 +216,23 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
         // 瞬间失去焦点
         setVolumn(0.5f, 0.5f);
     }
+
+    /**
+     * 获取当前音乐总时长,更新进度用
+     */
+    public int getDuration() {
+        if (getStatus() == CustomMediaPlayer.Status.STARTED
+                || getStatus() == CustomMediaPlayer.Status.PAUSED) {
+            return mMediaPlayer.getDuration();
+        }
+        return 0;
+    }
+
+    public int getCurrentPosition() {
+        if (getStatus() == CustomMediaPlayer.Status.STARTED
+                || getStatus() == CustomMediaPlayer.Status.PAUSED) {
+            return mMediaPlayer.getCurrentPosition();
+        }
+        return 0;
+    }
 }
