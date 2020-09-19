@@ -11,7 +11,15 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import com.liqun.lib_audio.mediaplayer.app.AudioHelper;
+import com.liqun.lib_audio.mediaplayer.events.AudioCompleteEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioErrorEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioLoadEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioPauseEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioReleaseEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioStartEvent;
 import com.liqun.lib_audio.mediaplayer.model.AudioBean;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 1、播放音频
@@ -75,6 +83,7 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
         mMediaPlayer.start();
         mWifiLock.acquire();
         // 对外发送start事件
+        EventBus.getDefault().post(new AudioStartEvent());
     }
 
     /**
@@ -87,8 +96,10 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
             mMediaPlayer.setDataSource(audioBean.mUrl);
             mMediaPlayer.prepareAsync();
             // 对外发送load事件
+            EventBus.getDefault().post(new AudioLoadEvent(audioBean));
         }catch (Exception e){
             // 对外发送error事件
+            EventBus.getDefault().post(new AudioErrorEvent());
         }
     }
 
@@ -107,6 +118,7 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
                 mAudioFocusManager.abandonAudioFocus();
             }
             // 发送暂停事件
+            EventBus.getDefault().post(new AudioPauseEvent());
         }
     }
 
@@ -138,6 +150,7 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
         mWifiLock = null;
         mAudioFocusManager = null;
         // 发送release销毁事件
+        EventBus.getDefault().post(new AudioReleaseEvent());
     }
 
     /**
@@ -153,22 +166,26 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener,
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-
+        // 缓存进度回调
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-
+        // 播放完毕回调
+        EventBus.getDefault().post(new AudioCompleteEvent());
     }
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-        return false;
+        // 播放出错回调
+        EventBus.getDefault().post(new AudioErrorEvent());
+        return true;
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-
+        // 准备完毕
+        start();
     }
 
     @Override
