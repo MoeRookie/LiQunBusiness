@@ -7,6 +7,7 @@ import com.liqun.lib_audio.mediaplayer.model.AudioBean;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * 控制播放逻辑类
@@ -44,10 +45,55 @@ public class AudioController {
     private PlayMode mPlayMode; // 循环模式
 
     private AudioController(){
+        EventBus.getDefault().register(this);
         mAudioPlayer = new AudioPlayer();
         mQueue = new ArrayList<>();
         mQueueIndex = 0;
         mPlayMode = PlayMode.LOOP;
+    }
+
+    private AudioBean getPlaying() {
+        if (mQueue != null && !mQueue.isEmpty() && mQueueIndex >= 0 && mQueueIndex < mQueue.size()) {
+            return mQueue.get(mQueueIndex);
+        }else{
+            throw new AudioQueueEmptyException("当前播放队列为空, 请先设置播放队列");
+        }
+    }
+
+    /**
+     * 获取播放器当前状态
+     * @return
+     */
+    private CustomMediaPlayer.Status getStatus(){
+        return mAudioPlayer.getStatus();
+    }
+
+    private AudioBean getNextPlaying() {
+        switch (mPlayMode) {
+            case LOOP:
+                mQueueIndex = (mQueueIndex + 1) % mQueue.size();
+                break;
+            case RANDOM:
+                mQueueIndex = new Random().nextInt(mQueue.size()) % mQueue.size();
+                break;
+            case REPEAT:
+                break;
+        }
+        return getPlaying();
+    }
+
+    private AudioBean getPrePlaying() {
+        switch (mPlayMode) {
+            case LOOP:
+                mQueueIndex = (mQueueIndex - 1) % mQueue.size();
+                break;
+            case RANDOM:
+                mQueueIndex = new Random().nextInt(mQueue.size()) % mQueue.size();
+                break;
+            case REPEAT:
+                break;
+        }
+        return getPlaying();
     }
 
     public ArrayList<AudioBean> getQueue(){
@@ -59,12 +105,45 @@ public class AudioController {
      * @param queue
      */
     public void setQueue(ArrayList<AudioBean> queue){
-        mQueue = queue;
+        setQueue(queue, 0);
     }
 
     public void setQueue(ArrayList<AudioBean> queue, int queueIndex){
         mQueue.addAll(queue);
         mQueueIndex = queueIndex;
+    }
+
+    private int queryAudio(AudioBean bean) {
+        return 0;
+    }
+    private void addCustomAudio(int index, AudioBean bean) {
+
+    }
+
+    /**
+     * 添加单一歌曲到指定位置
+     * @param bean
+     */
+    public void addAudio(AudioBean bean){
+        this.addAudio(0, bean);
+    }
+
+    public void addAudio(int index, AudioBean bean){
+        if (mQueue == null) {
+            throw new AudioQueueEmptyException("当前播放队列为空");
+        }
+        int query = queryAudio(bean);
+        if (query <= -1) {
+            // 没有添加过
+            addCustomAudio(index, bean);
+            setPlayIndex(index);
+        }else {
+            AudioBean currentBean = getNowPlaying();
+            if (!currentBean.id.equals(bean.id)) {
+                // 已经添加过且不在播放中
+                setPlayIndex(query);
+            }
+        }
     }
 
     public PlayMode getPlayMode(){
@@ -142,24 +221,27 @@ public class AudioController {
         }
     }
 
+    /**
+     * 是否播放中
+     * @return 状态
+     */
     private boolean isStartState() {
-        return false;
+        return CustomMediaPlayer.Status.STARTED == getStatus();
     }
 
+    /**
+     * 是否暂停
+     * @return 状态
+     */
     private boolean isPauseState() {
-        return false;
+        return CustomMediaPlayer.Status.PAUSED == getStatus();
     }
 
+    /**
+     * 获取当前歌曲信息
+     * @return 当前歌曲信息
+     */
     private AudioBean getNowPlaying() {
-        return null;
+        return getPlaying();
     }
-
-    private AudioBean getNextPlaying() {
-        return null;
-    }
-
-    private AudioBean getPrePlaying() {
-        return null;
-    }
-
 }

@@ -13,6 +13,7 @@ public class CustomMediaPlayer extends MediaPlayer implements MediaPlayer.OnComp
         IDLE, INITIALIZED, STARTED, PAUSED, STOPPED, COMPLETED
     }
 
+    private OnCompletionListener mOnCompletionListener;
     private Status mState;
 
     public CustomMediaPlayer() {
@@ -63,8 +64,6 @@ public class CustomMediaPlayer extends MediaPlayer implements MediaPlayer.OnComp
     public boolean isComplete(){
         return mState == Status.COMPLETED;
     }
-
-    private OnCompletionListener mOnCompletionListener;
 
     public void setOnCompletionListener(OnCompletionListener listener){
         mOnCompletionListener = listener;
