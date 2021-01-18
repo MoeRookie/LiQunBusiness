@@ -1,7 +1,6 @@
 package com.liqun.lib_audio.mediaplayer.view;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -81,6 +80,7 @@ public class BottomMusicView extends RelativeLayout {
         mPlayView.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
                 // 处理播放暂停事件
+                AudioController.getInstance().playOrPause();
             }
         });
         mRightView = rootView.findViewById(R.id.show_list_view);
@@ -100,13 +100,7 @@ public class BottomMusicView extends RelativeLayout {
     public void onAudioLoadEvent(AudioLoadEvent event) {
         // 更新当前view为load状态
         mAudioBean = event.mAudioBean;
-        showLoadView();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudioPauseEvent(AudioPauseEvent event) {
-        // 更新当前view为暂停状态
-        showPauseView();
+        showLoadingView();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -115,7 +109,13 @@ public class BottomMusicView extends RelativeLayout {
         showPlayView();
     }
 
-    private void showLoadView() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioPauseEvent(AudioPauseEvent event) {
+        // 更新当前view为暂停状态
+        showPauseView();
+    }
+
+    private void showLoadingView() {
         // 目前loading状态的UI处理与pause逻辑一样，分开为了以后好扩展
         if (mAudioBean != null) {
             ImageLoaderManager.getInstance().displayImageForCircle(mLeftView, mAudioBean.albumPic);

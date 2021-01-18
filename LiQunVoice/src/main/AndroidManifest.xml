@@ -3,6 +3,7 @@
     package="com.liqun.liqunbusiness">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:name=".application.LiQunVoiceApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
