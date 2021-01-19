@@ -3,6 +3,7 @@ package com.liqun.lib_audio.mediaplayer.view;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -80,7 +81,7 @@ public class BottomMusicView extends RelativeLayout {
         mPlayView.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
                 // 处理播放暂停事件
-                AudioController.getInstance().playOrPause();
+                AudioController.getInstance().play();
             }
         });
         mRightView = rootView.findViewById(R.id.show_list_view);

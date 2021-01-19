@@ -1,10 +1,16 @@
 package com.liqun.lib_audio.mediaplayer.core;
 
+import android.util.Log;
+
+import com.liqun.lib_audio.mediaplayer.events.AudioCompleteEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioErrorEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioPlayModeEvent;
 import com.liqun.lib_audio.mediaplayer.exception.AudioQueueEmptyException;
 import com.liqun.lib_audio.mediaplayer.model.AudioBean;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -175,7 +181,7 @@ public class AudioController {
     /**
      * 对外提供的play方法
      */
-    private void play() {
+    public void play() {
         AudioBean bean = getNowPlaying();
         mAudioPlayer.load(bean);
     }
@@ -243,5 +249,17 @@ public class AudioController {
      */
     private AudioBean getNowPlaying() {
         return getPlaying();
+    }
+
+    //插放完毕事件处理
+    @Subscribe(threadMode = ThreadMode.MAIN) public void onAudioCompleteEvent(
+            AudioCompleteEvent event) {
+        next();
+    }
+
+    //播放出错事件处理
+    @Subscribe(threadMode = ThreadMode.MAIN) public void onAudioErrorEvent(
+            AudioErrorEvent event) {
+        next();
     }
 }
