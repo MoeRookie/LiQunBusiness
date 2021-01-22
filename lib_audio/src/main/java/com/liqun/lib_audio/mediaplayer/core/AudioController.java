@@ -247,7 +247,7 @@ public class AudioController {
      * 获取当前歌曲信息
      * @return 当前歌曲信息
      */
-    private AudioBean getNowPlaying() {
+    public AudioBean getNowPlaying() {
         return getPlaying();
     }
 
