@@ -143,9 +143,8 @@ public class ImageLoaderManager {
      * @param notificationId
      * @param url
      */
-    public void displayImageForNotification(Context context, int id,
-                                            RemoteViews remoteViews, Notification notification,
-                                            int notificationId, String url){
+    public void displayImageForNotification(Context context, RemoteViews remoteViews, int id,
+                                            Notification notification, int notificationId, String url){
         displayImageForTarget(context, initNotificationTarget(
                 context,id,remoteViews,notification, notificationId
         ), url);
