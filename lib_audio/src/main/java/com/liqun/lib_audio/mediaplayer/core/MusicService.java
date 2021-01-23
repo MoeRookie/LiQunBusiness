@@ -9,10 +9,15 @@ import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.liqun.lib_audio.mediaplayer.app.AudioHelper;
+import com.liqun.lib_audio.mediaplayer.events.AudioLoadEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioPauseEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioStartEvent;
 import com.liqun.lib_audio.mediaplayer.model.AudioBean;
 import com.liqun.lib_audio.mediaplayer.view.NotificationHelper;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -66,7 +71,17 @@ implements NotificationHelper.NotificationHelperListener{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mAudioBeans = (ArrayList<AudioBean>) intent.getSerializableExtra(DATA_AUDIOS);
+        if (ACTION_START.equals(intent.getAction())) {
+            playMusic();
+            // 初始化前台notification
+            NotificationHelper.getInstance().init(this);
+        }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void playMusic() {
+        AudioController.getInstance().setQueue(mAudioBeans);
+        AudioController.getInstance().play();
     }
 
     @Override
@@ -93,7 +108,26 @@ implements NotificationHelper.NotificationHelperListener{
 
     @Override
     public void onNotificationInit() {
+        // service和notification绑定
         startForeground(NOTIFICATION_ID, NotificationHelper.getInstance().getNotification());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioLoadEvent(AudioLoadEvent event){
+        // 更新notification状态为加载状态
+        NotificationHelper.getInstance().showLoadStatus(event.mAudioBean);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioStartEvent(AudioStartEvent event){
+        // 更新notification状态为播放状态
+        NotificationHelper.getInstance().showPlayStatus();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioPauseEvent(AudioPauseEvent event){
+        // 更新notification状态为暂停状态
+        NotificationHelper.getInstance().showPauseStatus();
     }
 
     /**
@@ -112,6 +146,21 @@ implements NotificationHelper.NotificationHelperListener{
         public void onReceive(Context context, Intent intent) {
             if (null == intent || TextUtils.isEmpty(intent.getAction())) {
                 return;
+            }
+            String action = intent.getStringExtra(EXTRA);
+            switch (action) {
+                case EXTRA_PLAY:
+                    AudioController.getInstance().playOrPause();
+                    break;
+                case EXTRA_PRE:
+                    AudioController.getInstance().previous();
+                    break;
+                case EXTRA_NEXT:
+                    AudioController.getInstance().next();
+                    break;
+                case EXTRA_FAV:
+                    // 收藏广播处理
+                    break;
             }
         }
     }

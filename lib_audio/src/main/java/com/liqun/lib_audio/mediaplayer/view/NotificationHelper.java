@@ -138,7 +138,7 @@ public class NotificationHelper {
         //点击下一首按钮广播
         Intent nextIntent = new Intent(MusicService.NotificationReceiver.ACTION_STATUS_BAR);
         nextIntent.putExtra(MusicService.NotificationReceiver.EXTRA,
-                MusicService.NotificationReceiver.EXTRA_PRE);
+                MusicService.NotificationReceiver.EXTRA_NEXT);
         PendingIntent nextPendingIntent =
                 PendingIntent.getBroadcast(AudioHelper.getContext(), 3, nextIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
