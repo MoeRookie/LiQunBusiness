@@ -2,8 +2,10 @@ package com.liqun.lib_audio.mediaplayer.core;
 
 import android.util.Log;
 
+import com.liqun.lib_audio.mediaplayer.db.GreenDaoHelper;
 import com.liqun.lib_audio.mediaplayer.events.AudioCompleteEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioErrorEvent;
+import com.liqun.lib_audio.mediaplayer.events.AudioFavouriteEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioPlayModeEvent;
 import com.liqun.lib_audio.mediaplayer.exception.AudioQueueEmptyException;
 import com.liqun.lib_audio.mediaplayer.model.AudioBean;
@@ -19,6 +21,7 @@ import java.util.Random;
  * 控制播放逻辑类
  */
 public class AudioController {
+
     /**
      * 播放方式
      */
@@ -261,5 +264,17 @@ public class AudioController {
     @Subscribe(threadMode = ThreadMode.MAIN) public void onAudioErrorEvent(
             AudioErrorEvent event) {
         next();
+    }
+
+    public void changeFavouriteStatus() {
+        if (null != GreenDaoHelper.selectFavourite(getNowPlaying())) {
+            // 取消收藏
+            GreenDaoHelper.removeFavourite(getNowPlaying());
+            EventBus.getDefault().post(new AudioFavouriteEvent(false));
+        }else{
+            // 添加收藏
+            GreenDaoHelper.addFavourite(getNowPlaying());
+            EventBus.getDefault().post(new AudioFavouriteEvent(true));
+        }
     }
 }

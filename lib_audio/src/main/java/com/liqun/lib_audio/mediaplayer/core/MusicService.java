@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.liqun.lib_audio.mediaplayer.app.AudioHelper;
+import com.liqun.lib_audio.mediaplayer.events.AudioFavouriteEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioLoadEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioPauseEvent;
 import com.liqun.lib_audio.mediaplayer.events.AudioStartEvent;
@@ -130,6 +131,12 @@ implements NotificationHelper.NotificationHelperListener{
         NotificationHelper.getInstance().showPauseStatus();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioFavouriteEvent(AudioFavouriteEvent event){
+        // 更新notification收藏状态
+        NotificationHelper.getInstance().changeFavouriteStatus(event.isFavourite);
+    }
+
     /**
      * 接收Notification发送的广播
      */
@@ -160,6 +167,7 @@ implements NotificationHelper.NotificationHelperListener{
                     break;
                 case EXTRA_FAV:
                     // 收藏广播处理
+                    AudioController.getInstance().changeFavouriteStatus();
                     break;
             }
         }

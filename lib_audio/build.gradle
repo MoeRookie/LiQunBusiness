@@ -38,7 +38,7 @@ dependencies {
     compileOnly rootProject.depsLibs.design
     compileOnly rootProject.depsLibs.recyclerview
     //占位主工程的greenDao类库
-    compileOnly rootProject.depsLibs.greendao
+    implementation rootProject.depsLibs.greendao
     //占位主工程的eventbus库
     compileOnly rootProject.depsLibs.eventbus
     //占位主工程的rxjava库

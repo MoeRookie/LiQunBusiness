@@ -13,6 +13,7 @@ import com.liqun.lib_audio.R;
 import com.liqun.lib_audio.mediaplayer.app.AudioHelper;
 import com.liqun.lib_audio.mediaplayer.core.AudioController;
 import com.liqun.lib_audio.mediaplayer.core.MusicService;
+import com.liqun.lib_audio.mediaplayer.db.GreenDaoHelper;
 import com.liqun.lib_audio.mediaplayer.model.AudioBean;
 import com.liqun.lib_image_loader.app.ImageLoaderManager;
 
@@ -95,6 +96,8 @@ public class NotificationHelper {
                             .setCustomBigContentView(mRemoteViews) //大布局
                             .setContent(mSmallRemoteViews); //正常布局，两个布局可以切换
             mNotification = builder.build();
+
+            showLoadStatus(mAudioBean);
         }
     }
 
@@ -110,7 +113,13 @@ public class NotificationHelper {
         mRemoteViews = new RemoteViews(packageName, layoutId);
         mRemoteViews.setTextViewText(R.id.title_view, mAudioBean.name);
         mRemoteViews.setTextViewText(R.id.tip_view, mAudioBean.album);
-
+        if (null != GreenDaoHelper.selectFavourite(mAudioBean)) {
+            // 被收藏过
+            mRemoteViews.setImageViewResource(R.id.favourite_view, R.mipmap.note_btn_loved);
+        }else{
+            // 没有被收藏过
+            mRemoteViews.setImageViewResource(R.id.favourite_view, R.mipmap.note_btn_love_white);
+        }
         int smallLayoutId = R.layout.notification_small_layout;
         mSmallRemoteViews = new RemoteViews(packageName, smallLayoutId);
         mSmallRemoteViews.setTextViewText(R.id.title_view, mAudioBean.name);
@@ -169,6 +178,14 @@ public class NotificationHelper {
             ImageLoaderManager.getInstance()
                     .displayImageForNotification(AudioHelper.getContext(), mRemoteViews,
                             R.id.image_view, mNotification, NOTIFICATION_ID, mAudioBean.albumPic);
+            // 更新收藏状态
+            if (null != GreenDaoHelper.selectFavourite(mAudioBean)) {
+                // 被收藏过
+                mRemoteViews.setImageViewResource(R.id.favourite_view, R.mipmap.note_btn_loved);
+            }else{
+                // 没有被收藏过
+                mRemoteViews.setImageViewResource(R.id.favourite_view, R.mipmap.note_btn_love_white);
+            }
         }
 
         // 小布局也要更新
@@ -207,6 +224,15 @@ public class NotificationHelper {
             mSmallRemoteViews.setImageViewResource(R.id.play_view, R.mipmap.note_btn_play_white);
         }
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+    }
+
+
+    public void changeFavouriteStatus(boolean isFavourite){
+        if (mRemoteViews != null) {
+            mRemoteViews.setImageViewResource(R.id.favourite_view,
+                    isFavourite ? R.mipmap.note_btn_loved : R.mipmap.note_btn_love_white);
+            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        }
     }
 
 

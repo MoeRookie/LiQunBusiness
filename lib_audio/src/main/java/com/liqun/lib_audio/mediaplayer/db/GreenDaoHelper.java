@@ -12,16 +12,18 @@ import com.liqun.lib_audio.mediaplayer.model.Favourite;
 public class GreenDaoHelper {
 
     private static final String DB_BAME = "music_db";
-    // 数据库帮助类, 用来创建和升级数据库
+
     private static DaoMaster.DevOpenHelper mHelper;
-    // 最终创建好的数据库
     private static SQLiteDatabase mDb;
-    // 管理数据库
+    //管理数据库
     private static DaoMaster mDaoMaster;
-    // 管理各种实体Dao,不让业务层拿到session直接去操作数据库，统一由此类提供方法
+    //管理各种实体Dao,不让业务层拿到session直接去操作数据库，统一由此类提供方法
     private static DaoSession mDaoSession;
 
-    public static void initDatabase(){
+    /**
+     * 设置greenDao
+     */
+    public static void initDatabase() {
         mHelper = new DaoMaster.DevOpenHelper(AudioHelper.getContext(), DB_BAME, null);
         mDb = mHelper.getWritableDatabase();
         mDaoMaster = new DaoMaster(mDb);
@@ -29,10 +31,9 @@ public class GreenDaoHelper {
     }
 
     /**
-     * 添加收藏
-     * @param audioBean
+     * 添加感兴趣
      */
-    public static void addFavourite(AudioBean audioBean){
+    public static void addFavourite(AudioBean audioBean) {
         FavouriteDao dao = mDaoSession.getFavouriteDao();
         Favourite favourite = new Favourite();
         favourite.setAudioId(audioBean.id);
@@ -41,24 +42,22 @@ public class GreenDaoHelper {
     }
 
     /**
-     * 移除收藏
-     * @param audioBean
+     * 移除感兴趣
      */
-    public static void removeFavourite(AudioBean audioBean){
+    public static void removeFavourite(AudioBean audioBean) {
         FavouriteDao dao = mDaoSession.getFavouriteDao();
-        Favourite favourite = selectFavourite(audioBean);
+        Favourite favourite =
+                dao.queryBuilder().where(FavouriteDao.Properties.AudioId.eq(audioBean.id)).unique();
         dao.delete(favourite);
     }
 
     /**
-     * 查询收藏
-     * @param audioBean
-     * @return
+     * 查找感兴趣
      */
-    private static Favourite selectFavourite(AudioBean audioBean) {
+    public static Favourite selectFavourite(AudioBean audioBean) {
         FavouriteDao dao = mDaoSession.getFavouriteDao();
-        Favourite favourite = dao.queryBuilder().where(
-                FavouriteDao.Properties.AudioId.eq(audioBean.id)).unique();
+        Favourite favourite =
+                dao.queryBuilder().where(FavouriteDao.Properties.AudioId.eq(audioBean.id)).unique();
         return favourite;
     }
 }
