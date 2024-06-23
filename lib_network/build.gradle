@@ -24,6 +24,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation this.rootProject.depsLibs.appcompat
+    compileOnly this.rootProject.depsLibs.appcompat
     api rootProject.depsLibs.okhttp //okttp依赖
 }
